@@ -1,0 +1,75 @@
+require("dotenv").config();
+const express = require("express");
+
+const app = express();
+app.use(express.json());
+
+const URL = process.env.URL;
+if (!URL) throw new Error("Missing ENV: URL");
+
+app.get("/ping", (req, res) => {
+    res.json({
+        code: 200,
+        message: "ok"
+    });
+});
+
+app.get("/submit", async (req, res) => {
+    const name = req.query.name || null;
+    const contact = req.query.contact || null;
+    const content = req.query.content || null;
+
+    if (!name || !contact || !content) {
+        return res.json({
+            code: 300,
+            message: "Params missing!"
+        });
+    }
+
+    const payload = {
+        embeds: [
+            {
+                title: "New Submission!",
+                description:
+                    `**Name:    **\n${name}\n\n` +
+                    `**Contact: **\n${contact}\n\n` +
+                    `**Content: **\n${content}`,
+                color: 830383
+            }
+        ]
+    };
+
+    try {
+        const response = await fetch(URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        console.log("Webhook status:", response.status);
+
+        if (response.status === 204) {
+            return res.json({
+                code: 200,
+                message: "Successfully sent!"
+            });
+        } else {
+            return res.json({
+                code: 300,
+                message: "Could not be sent!"
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.json({
+            code: 500,
+            message: "Request failed!"
+        });
+    }
+});
+
+app.listen(5173, () => {
+    console.log("Server running on port 3000");
+});
