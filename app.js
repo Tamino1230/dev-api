@@ -1,7 +1,10 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors")
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 const URL = process.env.URL;
@@ -48,7 +51,7 @@ app.get("/submit", async (req, res) => {
             body: JSON.stringify(payload)
         });
 
-        console.log("Webhook status:", response.status);
+        // console.log("Webhook status:", response.status);
 
         if (response.status === 204) {
             return res.json({
@@ -56,6 +59,7 @@ app.get("/submit", async (req, res) => {
                 message: "Successfully sent!"
             });
         } else {
+            console.warn(`Webhook couldnt be send.! ${response}`);0
             return res.json({
                 code: 300,
                 message: "Could not be sent!"
@@ -70,6 +74,7 @@ app.get("/submit", async (req, res) => {
     }
 });
 
-app.listen(5173, () => {
-    console.log("Server running on port 3000");
+const PORT = 5173;
+app.listen(PORT, () => {
+    console.log("Server running on port 5173");
 });
