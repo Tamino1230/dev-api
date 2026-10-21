@@ -23,6 +23,8 @@ app.get("/report", async (req, res) => {
     const content = req.query.content || null
     const typeReq = req.query.typeReq || null
 
+    var payload;
+
     if (!name || !version || !content) {
         return res.json({
             code: 300,
@@ -31,7 +33,7 @@ app.get("/report", async (req, res) => {
     }
 
     if (typeReq === "bug") {
-        const payload = {
+        payload = {
             embeds: [
                 {
                     title: "Bug Report",
@@ -45,7 +47,7 @@ app.get("/report", async (req, res) => {
             ]
         };
     } else if (typeReq === "feedback") {
-        const payload = {
+        payload = {
             embeds: [
                 {
                     title: "Feedback",
